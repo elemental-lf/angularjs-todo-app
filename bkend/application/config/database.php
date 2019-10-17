@@ -6,9 +6,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
+	'hostname' => getenv('DB_HOST'),
+	'username' => getenv('DB_USER'),
+	'password' => getenv('DB_PASSWORD'),
 	'database' => 'ngtodo',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

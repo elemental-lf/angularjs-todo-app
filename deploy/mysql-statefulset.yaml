@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app-mysql
+  labels:
+    app: todo-app
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: todo-app
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: todo-app-mysql
+  labels:
+    app: todo-app
+spec:
+  replicas: 1
+  serviceName: todo-app-mysql
+  selector:
+    matchLabels:
+      app: todo-app
+      tier: mysql
+  template:
+    metadata:
+      labels:
+        app: todo-app
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: todo-app-mysql-password
+              key: password
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql
+          mountPath: /var/lib/mysql
+        - name: mysql-init-db
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: mysql-init-db
+        configMap:
+          name: todo-app-mysql-init-db        
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: local-path
+      resources:
+        requests:
+          storage: 1Gi

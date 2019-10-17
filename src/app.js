@@ -1,7 +1,7 @@
 var app = angular.module('myApp',['ngRoute']);
 
 app.constant('BASEURL', 
-    'http://localhost/projects/ngTodo/bkend/'                                                  
+    '/bkend/index.php?/'
 );
 
 app.config(function($routeProvider) {
